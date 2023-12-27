@@ -3,8 +3,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, ConfusionMatrixDisplay
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 from sklearn.utils import shuffle
+from data.data_loader import DataLoader
+from misc.plotter import Plotter
 
 plt.rcParams["figure.figsize"] = (10,6)
 import warnings
@@ -44,19 +46,17 @@ if __name__ == "__main__":
     plt.tight_layout()
 
     # use preprocessed fixed dataset
-    x_train = pd.read_csv('x_train.csv').drop(columns=['Unnamed: 0']).to_numpy()
-    x_val = pd.read_csv('x_val.csv').drop(columns=['Unnamed: 0']).to_numpy()
-    x_test = pd.read_csv('x_test.csv').drop(columns=['Unnamed: 0']).to_numpy()
-    y_train = pd.read_csv('y_train.csv').drop(columns=['Unnamed: 0']).to_numpy()
-    y_val = pd.read_csv('y_val.csv').drop(columns=['Unnamed: 0']).to_numpy()
-    y_test = pd.read_csv('y_test.csv').drop(columns=['Unnamed: 0']).to_numpy()
+    data_loader = DataLoader()
+    data_loader.load_data()
+    x_train, x_val,x_test, y_train, y_val, y_test = data_loader.get_data()
 
     # Initialize best accuracy as 0 and best C as None
     best_accuracy = 0
     best_C = None
 
+    C_space = [0.001, 0.01, 0.1, 1, 10, 100]
     # Loop over various values of C
-    for C in [0.001, 0.01, 0.1, 1, 10, 100]:
+    for C in C_space:
         model = LogisticRegression(C=C, max_iter=1000)
         model.fit(x_train, y_train)
         y_val_pred = model.predict(x_val)
@@ -83,18 +83,10 @@ if __name__ == "__main__":
     conf_matrix_test = confusion_matrix(y_test, y_test_pred)
 
     # Output results
-    print("Training Accuracy:", accuracy_train)
-    print("Test Accuracy:", accuracy_test)
+    plotter = Plotter()
+    plotter.cm_plotter(cm=conf_matrix_train, model=model, text='confusion matrix of training set')
+    plotter.cm_plotter(cm=conf_matrix_test, model=model, text='confusion matrix of test set')
 
-    disp = ConfusionMatrixDisplay(confusion_matrix=conf_matrix_train, display_labels=model.classes_)
-    disp.plot()
-    plt.title('confusion matrix of training set')
-    plt.show()
-
-    disp = ConfusionMatrixDisplay(confusion_matrix=conf_matrix_test, display_labels=model.classes_)
-    disp.plot()
-    plt.title('confusion matrix of test set')
-    plt.show()
-
+    print("Training Accuracy:{} | Test Accuracy:{}".format(accuracy_train, accuracy_test))
     print(classification_report(y_test, y_test_pred))
 

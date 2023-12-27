@@ -60,9 +60,7 @@ class KMeans:
             self.centroids = new_centroids
         self.inertia = self.compute_inertia(X, self.labels, self.centroids)
 
-# Load Iris dataset and use only the first two features
-iris = load_iris()
-X = iris.data[:, :2]
+X = np.concatenate((x_train, x_val, x_test))
 
 # Run K-Means for k = 2, 5, 10 with different initializations
 k_values = [2, 5, 10]

@@ -2,9 +2,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, ConfusionMatrixDisplay
 from sklearn.utils import shuffle
 
@@ -13,7 +11,6 @@ import warnings
 warnings.filterwarnings("ignore")
 warnings.warn("this will not show")
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
-
 
 
 
@@ -34,19 +31,25 @@ if __name__ == "__main__":
     # plt.title('Pairplot of 4 features')
     plt.show()
 
-    # split features and labels
-    x = df.drop(columns=['Species'])
-    y = df['Species']
+    # Boxplots to visualize distributions
+    plt.figure(figsize=(12, 6))
+    plt.subplot(2, 2, 1)
+    sns.boxplot(x="Species", y="SepalLengthCm", data=df)
+    plt.subplot(2, 2, 2)
+    sns.boxplot(x="Species", y="SepalWidthCm", data=df)
+    plt.subplot(2, 2, 3)
+    sns.boxplot(x="Species", y="PetalLengthCm", data=df)
+    plt.subplot(2, 2, 4)
+    sns.boxplot(x="Species", y="PetalWidthCm", data=df)
+    plt.tight_layout()
 
-    # split the data
-    x_train, x_temp, y_train, y_temp = train_test_split(x, y, test_size=0.4, random_state=42)
-    x_val, x_test, y_val, y_test = train_test_split(x_temp, y_temp, test_size=0.5, random_state=42)
-
-    # standardization (must be done seperately in order to prevent data leakage)
-    scaler = StandardScaler()
-    x_train = scaler.fit_transform(x_train)
-    x_val = scaler.transform(x_val)
-    x_test = scaler.transform(x_test)
+    # use preprocessed fixed dataset
+    x_train = pd.read_csv('x_train.csv').drop(columns=['Unnamed: 0']).to_numpy()
+    x_val = pd.read_csv('x_val.csv').drop(columns=['Unnamed: 0']).to_numpy()
+    x_test = pd.read_csv('x_test.csv').drop(columns=['Unnamed: 0']).to_numpy()
+    y_train = pd.read_csv('y_train.csv').drop(columns=['Unnamed: 0']).to_numpy()
+    y_val = pd.read_csv('y_val.csv').drop(columns=['Unnamed: 0']).to_numpy()
+    y_test = pd.read_csv('y_test.csv').drop(columns=['Unnamed: 0']).to_numpy()
 
     # Initialize best accuracy as 0 and best C as None
     best_accuracy = 0

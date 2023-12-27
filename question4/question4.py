@@ -40,10 +40,11 @@ def logistic_regression_with_rbf(x_train, y_train, x_val, y_val, k, r_space):
     best_accuracy = 0
 
     for r in r_space:
-        if k == 10:
-            plt.figure(figsize=(8, 6))
-            plot_rbf_functions(centers, r, "RBF Functions for k={}, r={}".format(k,r))
-            plt.show()
+        # uncomment here for contour plotting
+        # if k == 10:
+            # plt.figure(figsize=(8, 6))
+            # plot_rbf_functions(centers, r, "RBF Functions for k={}, r={}".format(k,r))
+            # plt.show()
         # Transform features with modified RBF
         x_train_rbf = rbf_transform(x_train, centers, r)
         x_val_rbf = rbf_transform(x_val, centers, r)
